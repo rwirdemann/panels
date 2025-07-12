@@ -19,12 +19,12 @@ const (
 )
 
 type Panel struct {
-	name            string
 	width           int
 	height          int
 	hasBorder       bool
 	children        []Panel
 	layoutDirection int
+	ratio           float32
 }
 
 func (p Panel) Resize(width int, height int) Panel {
@@ -33,37 +33,39 @@ func (p Panel) Resize(width int, height int) Panel {
 	return p
 }
 
-func distribute(width int, panels []Panel) []int {
-	if len(panels) == 0 {
-		return []int{}
+func (p Panel) distributeHorizontally(width int) {
+	if len(p.children) == 0 {
+		return
 	}
 
-	panelWidth := width / len(panels)
-	widths := make([]int, len(panels))
 	totalUsed := 0
-	for i, panel := range panels {
+	for i, panel := range p.children {
+		panelWidth := int(float32(width) * panel.ratio)
 		if panel.hasBorder {
-			widths[i] = panelWidth - 2
-			totalUsed += widths[i] + 2
+			p.children[i].width = panelWidth - 2
 		} else {
-			widths[i] = panelWidth
-			totalUsed += widths[i]
+			p.children[i].width = panelWidth
 		}
+		totalUsed += panelWidth
 	}
 
-	if totalUsed < width && len(panels) > 0 {
-		widths[len(panels)-1] += width - totalUsed
+	if totalUsed < width && len(p.children) > 0 {
+		p.children[len(p.children)-1].width += width - totalUsed
 	}
+}
 
-	return widths
+func (p Panel) distributeVertically(height int) {
+	for i := range p.children {
+		p.children[i].height = height - 2
+	}
 }
 
 func (p Panel) View() string {
 	if len(p.children) > 0 {
+		p.distributeHorizontally(width)
+		p.distributeVertically(height)
 		var children []string
-		widths := distribute(width, p.children)
-		for i, c := range p.children {
-			c = c.Resize(widths[i], height)
+		for _, c := range p.children {
 			children = append(children, c.View())
 		}
 		return lipgloss.JoinHorizontal(lipgloss.Top, children...)
@@ -106,8 +108,10 @@ func (m model) View() string {
 
 func main() {
 	m := model{panel: Panel{hasBorder: true}}
-	m.panel.children = append(m.panel.children, Panel{name: "Panel 1", hasBorder: true},
-		Panel{name: "Panel 1", hasBorder: true})
+	m.panel.children = append(m.panel.children,
+		Panel{hasBorder: true, ratio: 0.35},
+		Panel{hasBorder: true, ratio: 0.45},
+		Panel{hasBorder: true, ratio: 0.20})
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
