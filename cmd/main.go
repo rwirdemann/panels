@@ -18,8 +18,10 @@ func (i item) Description() string { return i.desc }
 func (i item) FilterValue() string { return i.title }
 
 type model struct {
-	panel *panels.Panel
-	list  list.Model
+	width  int
+	height int
+	panel  *panels.Panel
+	list   list.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -29,8 +31,8 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		panels.Width = msg.Width
-		panels.Height = msg.Height
+		m.width = msg.Width
+		m.height = msg.Height
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl-c", "q":
@@ -44,7 +46,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	return m.panel.View(m)
+	return m.panel.View(m, m.width, m.height)
 }
 
 func (m model) listView(mo tea.Model, w, h int) string {

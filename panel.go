@@ -12,11 +12,6 @@ const (
 	LayoutDirectionVertial    LayoutDirection = 2
 )
 
-var (
-	Width  int
-	Height int
-)
-
 type Panel struct {
 	width           int
 	height          int
@@ -67,13 +62,13 @@ func (p *Panel) distributeVertically(height int) {
 	}
 }
 
-func (p *Panel) View(m tea.Model) string {
+func (p *Panel) View(m tea.Model, w, h int) string {
 	if len(p.children) > 0 {
-		p.distributeHorizontally(Width)
-		p.distributeVertically(Height)
+		p.distributeHorizontally(w)
+		p.distributeVertically(h)
 		var children []string
 		for _, c := range p.children {
-			children = append(children, c.View(m))
+			children = append(children, c.View(m, w, h))
 		}
 		return lipgloss.JoinHorizontal(lipgloss.Top, children...)
 	}
