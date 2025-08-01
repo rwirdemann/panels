@@ -55,6 +55,14 @@ func (m model) listView(mo tea.Model, w, h int) string {
 	return model.list.View()
 }
 
+func top(m tea.Model, w, h int) string {
+	return "top"
+}
+
+func bottom(m tea.Model, w, h int) string {
+	return "bottom"
+}
+
 func main() {
 	items := []list.Item{
 		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
@@ -62,10 +70,14 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	m := model{panel: panels.NewPanel(true, false, 1.0, nil), list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-	m.panel.Append(panels.NewPanel(true, false, 0.35, m.listView))
-	m.panel.Append(panels.NewPanel(true, false, 0.45, nil))
-	m.panel.Append(panels.NewPanel(true, false, 0.20, nil))
+	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0, nil)
+	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
+
+	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35, m.listView)
+	rootPanel.Append(leftPanel)
+	rightPanel := panels.NewPanel(panels.LayoutDirectionVertical, true, false, 0.65, nil)
+	rootPanel.Append(rightPanel)
+
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
