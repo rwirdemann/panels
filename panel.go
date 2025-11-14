@@ -14,6 +14,7 @@ const (
 )
 
 type Panel struct {
+	Name            string
 	width           int
 	height          int
 	hasBorder       bool
@@ -79,13 +80,13 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 		if p.layoutDirection == LayoutDirectionVertical {
 			totalUsed := 0
 			for i, c := range p.children {
-				height := int(float32(parentHeight) * c.ratio)
+				height := int(float32(p.height) * c.ratio)
 				totalUsed += height
 				if c.hasBorder {
-					p.children[i].width = parentWith - 2
+					p.children[i].width = p.width - 2
 					p.children[i].height = height - 2
 				} else {
-					p.children[i].width = parentWith
+					p.children[i].width = p.width
 					p.children[i].height = height
 				}
 			}
@@ -96,7 +97,7 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 
 			var children []string
 			for _, c := range p.children {
-				children = append(children, c.View(m, parentWith, parentHeight))
+				children = append(children, c.View(m, p.width, p.height))
 			}
 			return lipgloss.JoinVertical(lipgloss.Top, children...)
 		}
@@ -111,7 +112,5 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 		h, v := style.GetFrameSize()
 		content = content + p.renderContent(m, p.width-h, p.height-v)
 	}
-
-	// size := fmt.Sprintf("\n\nparentWith=%d parentHeighth=%d \npanelWith=%d panelHeight=%d\n", parentWith, parentHeight, p.width, p.height)
 	return style.Render(content)
 }
