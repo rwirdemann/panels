@@ -55,12 +55,12 @@ func (p *Panel) distributeHorizontally(width int) {
 }
 
 func (p *Panel) distributeVertically(height int) {
-	v := 2
-	if p.hasHelp {
-		v = 3
-	}
-	for i := range p.children {
-		p.children[i].height = height - v
+	for i, child := range p.children {
+		if child.hasBorder {
+			p.children[i].height = height - 2
+		} else {
+			p.children[i].height = height
+		}
 	}
 }
 
@@ -72,21 +72,24 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 			p.distributeVertically(parentHeight)
 			var children []string
 			for _, c := range p.children {
-				children = append(children, c.View(m, parentWith, parentHeight))
+				children = append(children, c.View(m, c.width, c.height))
 			}
 			return lipgloss.JoinHorizontal(lipgloss.Top, children...)
 		}
 
 		if p.layoutDirection == LayoutDirectionVertical {
+			p.width = parentWith
+			p.height = parentHeight
+
 			totalUsed := 0
 			for i, c := range p.children {
-				height := int(float32(p.height) * c.ratio)
+				height := int(float32(parentHeight) * c.ratio)
 				totalUsed += height
 				if c.hasBorder {
-					p.children[i].width = p.width - 2
+					p.children[i].width = parentWith - 2
 					p.children[i].height = height - 2
 				} else {
-					p.children[i].width = p.width
+					p.children[i].width = parentWith
 					p.children[i].height = height
 				}
 			}
@@ -97,7 +100,7 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 
 			var children []string
 			for _, c := range p.children {
-				children = append(children, c.View(m, p.width, p.height))
+				children = append(children, c.View(m, c.width, c.height))
 			}
 			return lipgloss.JoinVertical(lipgloss.Top, children...)
 		}

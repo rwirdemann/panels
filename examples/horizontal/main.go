@@ -55,12 +55,8 @@ func (m model) listView(mo tea.Model, w, h int) string {
 	return model.list.View()
 }
 
-func top(m tea.Model, w, h int) string {
-	return "top"
-}
-
-func bottom(m tea.Model, w, h int) string {
-	return "bottom"
+func right(m tea.Model, w, h int) string {
+	return "right"
 }
 
 func main() {
@@ -75,7 +71,7 @@ func main() {
 
 	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35, m.listView)
 	rootPanel.Append(leftPanel)
-	rightPanel := panels.NewPanel(panels.LayoutDirectionVertical, true, false, 0.65, nil)
+	rightPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.65, right)
 	rootPanel.Append(rightPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
