@@ -67,6 +67,14 @@ func left(m tea.Model, w, h int) string {
 	return "left"
 }
 
+func bottomLeft(m tea.Model, w, h int) string {
+	return "bottom left"
+}
+
+func bottomRight(m tea.Model, w, h int) string {
+	return "bottom right"
+}
+
 func main() {
 	items := []list.Item{
 		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
@@ -89,9 +97,15 @@ func main() {
 	topPanel.Name = "top"
 
 	rightPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottom)
+	bottomPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, false, false, 0.50, bottom)
 	bottomPanel.Name = "bottom"
 	rightPanel.Append(bottomPanel)
+
+	leftBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottomLeft)
+	bottomPanel.Append(leftBottomPanel)
+
+	rightBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottomRight)
+	bottomPanel.Append(rightBottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {

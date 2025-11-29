@@ -33,43 +33,25 @@ func (p *Panel) Append(panel *Panel) {
 	p.children = append(p.children, panel)
 }
 
-func (p *Panel) distributeHorizontally(width int) {
-	if len(p.children) == 0 {
-		return
-	}
-
-	totalUsed := 0
-	for i, panel := range p.children {
-		panelWidth := int(float32(width) * panel.ratio)
-		if panel.hasBorder {
-			p.children[i].width = panelWidth - 2
-		} else {
-			p.children[i].width = panelWidth
-		}
-		totalUsed += panelWidth
-	}
-
-	if totalUsed < width && len(p.children) > 0 {
-		p.children[len(p.children)-1].width += width - totalUsed
-	}
-}
-
-func (p *Panel) distributeVertically(height int) {
-	for i, child := range p.children {
-		if child.hasBorder {
-			p.children[i].height = height - 2
-		} else {
-			p.children[i].height = height
-		}
-	}
-}
-
 func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 	if len(p.children) > 0 {
 
 		if p.layoutDirection == LayoutDirectionHorizontal {
-			p.distributeHorizontally(parentWith)
-			p.distributeVertically(parentHeight)
+			totalUsed := 0
+			for i, child := range p.children {
+				childWidth := int(float32(parentWith) * child.ratio)
+				if child.hasBorder {
+					p.children[i].width = childWidth - 2
+					p.children[i].height = parentHeight - 2
+				} else {
+					p.children[i].width = childWidth
+					p.children[i].height = parentHeight
+				}
+				totalUsed += childWidth
+			}
+			if totalUsed < parentWith && len(p.children) > 0 {
+				p.children[len(p.children)-1].width += parentWith - totalUsed
+			}
 			var children []string
 			for _, c := range p.children {
 				children = append(children, c.View(m, c.width, c.height))
@@ -78,9 +60,6 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 		}
 
 		if p.layoutDirection == LayoutDirectionVertical {
-			p.width = parentWith
-			p.height = parentHeight
-
 			totalUsed := 0
 			for i, c := range p.children {
 				height := int(float32(parentHeight) * c.ratio)
