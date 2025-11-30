@@ -4,24 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/rwirdemann/panels"
 )
 
-type item struct {
-	title, desc string
-}
-
-func (i item) Title() string       { return i.title }
-func (i item) Description() string { return i.desc }
-func (i item) FilterValue() string { return i.title }
-
 type model struct {
+	panel  *panels.Panel
 	width  int
 	height int
-	panel  *panels.Panel
-	list   list.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -40,71 +30,42 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	}
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
+	return m, nil
 }
 
 func (m model) View() string {
 	return m.panel.View(m, m.width, m.height)
 }
 
-func (m model) listView(mo tea.Model, w, h int) string {
-	model := mo.(model)
-	model.list.SetSize(w, h)
-	return model.list.View()
-}
-
-func top(m tea.Model, w, h int) string {
-	return "top"
-}
-
-func bottom(m tea.Model, w, h int) string {
-	return "bottom"
-}
-
-func left(m tea.Model, w, h int) string {
-	return "left"
-}
-
-func bottomLeft(m tea.Model, w, h int) string {
-	return "bottom left"
-}
-
-func bottomRight(m tea.Model, w, h int) string {
-	return "bottom right"
+func renderPanel(m tea.Model, name string, w, h int) string {
+	return name
 }
 
 func main() {
-	items := []list.Item{
-		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
-		item{title: "Nutella", desc: "It's good on toast"},
-		item{title: "Bitter melon", desc: "It cools you down"},
-	}
-
-	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0, nil)
-	rootPanel.Name = "root"
-	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, left)
+	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0)
+	m := model{panel: rootPanel}
+	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
 	leftPanel.Name = "left"
 	rootPanel.Append(leftPanel)
 
-	rightPanel := panels.NewPanel(panels.LayoutDirectionVertical, false, false, 0.50, nil)
+	rightPanel := panels.NewPanel(panels.LayoutDirectionVertical, false, false, 0.50).WithContent(renderPanel)
 	rightPanel.Name = "right"
 	rootPanel.Append(rightPanel)
 
-	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, top)
+	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
 	topPanel.Name = "top"
 
 	rightPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, false, false, 0.50, bottom)
+	bottomPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, false, false, 0.50).WithContent(renderPanel)
 	bottomPanel.Name = "bottom"
 	rightPanel.Append(bottomPanel)
 
-	leftBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottomLeft)
+	leftBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	leftBottomPanel.Name = "bottom left"
 	bottomPanel.Append(leftBottomPanel)
 
-	rightBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottomRight)
+	rightBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	rightBottomPanel.Name = "bottom right"
 	bottomPanel.Append(rightBottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

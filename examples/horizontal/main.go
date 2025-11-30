@@ -18,10 +18,11 @@ func (i item) Description() string { return i.desc }
 func (i item) FilterValue() string { return i.title }
 
 type model struct {
-	width  int
-	height int
-	panel  *panels.Panel
-	list   list.Model
+	width   int
+	height  int
+	panel   *panels.Panel
+	list    list.Model
+	content string
 }
 
 func (m model) Init() tea.Cmd {
@@ -38,10 +39,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl-c", "q":
 			return m, tea.Quit
 		}
-
 	}
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
+
+	// Update content with description of currently selected item
+	if i, ok := m.list.SelectedItem().(item); ok {
+		m.content = i.desc
+	}
+
 	return m, cmd
 }
 
@@ -49,14 +55,15 @@ func (m model) View() string {
 	return m.panel.View(m, m.width, m.height)
 }
 
-func (m model) listView(mo tea.Model, w, h int) string {
-	model := mo.(model)
+func listView(m tea.Model, name string, w, h int) string {
+	model := m.(model)
 	model.list.SetSize(w, h)
 	return model.list.View()
 }
 
-func right(m tea.Model, w, h int) string {
-	return "right"
+func right(m tea.Model, name string, w, h int) string {
+	model := m.(model)
+	return model.content
 }
 
 func main() {
@@ -66,12 +73,12 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0, nil)
+	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 
-	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35, m.listView)
+	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35).WithContent(listView)
 	rootPanel.Append(leftPanel)
-	rightPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.65, right)
+	rightPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.65).WithContent(right)
 	rootPanel.Append(rightPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

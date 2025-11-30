@@ -1,3 +1,17 @@
 # Bubbletea Panels
 
-Some demo code that distributes panels within a parent according to some layout rules.
+Bubbletea Panels provides a framework for placing, layouting and resizing panels across the root window of a TUI application.
+
+┌──────────────────────────────────────────────────┐
+│ ┌───────────────────────┐ ┌────────────────────┐ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ │                       │ │                    │ │
+│ └───────────────────────┘ └────────────────────┘ │
+└──────────────────────────────────────────────────┘

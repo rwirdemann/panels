@@ -22,11 +22,16 @@ type Panel struct {
 	layoutDirection LayoutDirection
 	ratio           float32
 	hasHelp         bool
-	renderContent   func(m tea.Model, w, h int) string
+	renderContent   func(m tea.Model, name string, w, h int) string
 }
 
-func NewPanel(layout LayoutDirection, hasBorder bool, hasHelp bool, ratio float32, renderContent func(m tea.Model, w, h int) string) *Panel {
-	return &Panel{layoutDirection: layout, hasBorder: hasBorder, hasHelp: hasHelp, ratio: ratio, renderContent: renderContent}
+func NewPanel(layout LayoutDirection, hasBorder bool, hasHelp bool, ratio float32) *Panel {
+	return &Panel{layoutDirection: layout, hasBorder: hasBorder, hasHelp: hasHelp, ratio: ratio}
+}
+
+func (p *Panel) WithContent(f func(m tea.Model, name string, w, h int) string) *Panel {
+	p.renderContent = f
+	return p
 }
 
 func (p *Panel) Append(panel *Panel) {
@@ -92,7 +97,7 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 	content := ""
 	if p.renderContent != nil {
 		h, v := style.GetFrameSize()
-		content = content + p.renderContent(m, p.width-h, p.height-v)
+		content = content + p.renderContent(m, p.Name, p.width-h, p.height-v)
 	}
 	return style.Render(content)
 }

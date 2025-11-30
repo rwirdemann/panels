@@ -55,11 +55,11 @@ func (m model) listView(mo tea.Model, w, h int) string {
 	return model.list.View()
 }
 
-func top(m tea.Model, w, h int) string {
+func top(m tea.Model, name string, w, h int) string {
 	return "top"
 }
 
-func bottom(m tea.Model, w, h int) string {
+func bottom(m tea.Model, name string, w, h int) string {
 	return "bottom"
 }
 
@@ -70,11 +70,13 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	rootPanel := panels.NewPanel(panels.LayoutDirectionVertical, true, false, 1.0, nil)
+	rootPanel := panels.NewPanel(panels.LayoutDirectionVertical, true, false, 1.0)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, top)
+
+	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(top)
 	rootPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50, bottom)
+
+	bottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(bottom)
 	rootPanel.Append(bottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
