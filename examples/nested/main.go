@@ -37,35 +37,35 @@ func (m model) View() string {
 	return m.panel.View(m, m.width, m.height)
 }
 
-func renderPanel(m tea.Model, name string, w, h int) string {
-	return name
+func renderPanel(m tea.Model, panelID int, w, h int) string {
+	return fmt.Sprintf("Panel %d", panelID)
 }
 
 func main() {
-	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, true, false, 1.0)
 	m := model{panel: rootPanel}
-	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
-	leftPanel.Name = "left"
+	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	leftPanel.Title = "left"
 	rootPanel.Append(leftPanel)
 
-	rightPanel := panels.NewPanel(panels.LayoutDirectionVertical, false, false, 0.50).WithContent(renderPanel)
-	rightPanel.Name = "right"
+	rightPanel := panels.NewPanel(3, panels.LayoutDirectionVertical, false, false, 0.50).WithContent(renderPanel)
+	rightPanel.Title = "right"
 	rootPanel.Append(rightPanel)
 
-	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
-	topPanel.Name = "top"
+	topPanel := panels.NewPanel(4, panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	topPanel.Title = "top"
 
 	rightPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, false, false, 0.50).WithContent(renderPanel)
-	bottomPanel.Name = "bottom"
+	bottomPanel := panels.NewPanel(5, panels.LayoutDirectionHorizontal, false, false, 0.50).WithContent(renderPanel)
+	bottomPanel.Title = "bottom"
 	rightPanel.Append(bottomPanel)
 
-	leftBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
-	leftBottomPanel.Name = "bottom left"
+	leftBottomPanel := panels.NewPanel(6, panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	leftBottomPanel.Title = "bottom left"
 	bottomPanel.Append(leftBottomPanel)
 
-	rightBottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
-	rightBottomPanel.Name = "bottom right"
+	rightBottomPanel := panels.NewPanel(7, panels.LayoutDirectionNone, true, false, 0.50).WithContent(renderPanel)
+	rightBottomPanel.Title = "bottom right"
 	bottomPanel.Append(rightBottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

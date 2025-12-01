@@ -55,13 +55,13 @@ func (m model) View() string {
 	return m.panel.View(m, m.width, m.height)
 }
 
-func listView(m tea.Model, name string, w, h int) string {
+func listView(m tea.Model, panelID int, w, h int) string {
 	model := m.(model)
 	model.list.SetSize(w, h)
 	return model.list.View()
 }
 
-func right(m tea.Model, name string, w, h int) string {
+func right(m tea.Model, panelID int, w, h int) string {
 	model := m.(model)
 	return model.content
 }
@@ -73,13 +73,13 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, true, false, 1.0)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 
-	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35).
+	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, true, false, 0.35).
 		WithContent(listView)
 	rootPanel.Append(leftPanel)
-	rightPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.65).WithContent(right)
+	rightPanel := panels.NewPanel(3, panels.LayoutDirectionNone, true, false, 0.65).WithContent(right)
 	rootPanel.Append(rightPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

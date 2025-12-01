@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/rwirdemann/panels"
 )
@@ -13,15 +12,10 @@ type item struct {
 	title, desc string
 }
 
-func (i item) Title() string       { return i.title }
-func (i item) Description() string { return i.desc }
-func (i item) FilterValue() string { return i.title }
-
 type model struct {
 	width  int
 	height int
 	panel  *panels.Panel
-	list   list.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -40,43 +34,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	}
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
+	return m, nil
 }
 
 func (m model) View() string {
 	return m.panel.View(m, m.width, m.height)
 }
 
-func (m model) listView(mo tea.Model, w, h int) string {
-	model := mo.(model)
-	model.list.SetSize(w, h)
-	return model.list.View()
-}
-
-func top(m tea.Model, name string, w, h int) string {
+func top(m tea.Model, panelID int, w, h int) string {
 	return "top"
 }
 
-func bottom(m tea.Model, name string, w, h int) string {
+func bottom(m tea.Model, panelID int, w, h int) string {
 	return "bottom"
 }
 
 func main() {
-	items := []list.Item{
-		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
-		item{title: "Nutella", desc: "It's good on toast"},
-		item{title: "Bitter melon", desc: "It cools you down"},
-	}
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, true, false, 1.0)
+	m := model{panel: rootPanel}
 
-	rootPanel := panels.NewPanel(panels.LayoutDirectionVertical, true, false, 1.0)
-	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-
-	topPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(top)
+	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, true, false, 0.50).WithContent(top)
 	rootPanel.Append(topPanel)
 
-	bottomPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.50).WithContent(bottom)
+	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, true, false, 0.50).WithContent(bottom)
 	rootPanel.Append(bottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
