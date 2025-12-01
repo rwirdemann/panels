@@ -26,12 +26,22 @@ type Panel struct {
 	renderContent   func(m tea.Model, panelID int, w, h int) string
 }
 
-func NewPanel(id int, layout LayoutDirection, hasBorder bool, hasHelp bool, ratio float32) *Panel {
-	return &Panel{ID: id, layoutDirection: layout, hasBorder: hasBorder, hasHelp: hasHelp, ratio: ratio}
+func NewPanel(id int, layout LayoutDirection, ratio float32) *Panel {
+	return &Panel{ID: id, layoutDirection: layout, ratio: ratio}
 }
 
 func (p *Panel) WithContent(f func(m tea.Model, panelID int, w, h int) string) *Panel {
 	p.renderContent = f
+	return p
+}
+
+func (p *Panel) WithBorder() *Panel {
+	p.hasBorder = true
+	return p
+}
+
+func (p *Panel) WithHelp() *Panel {
+	p.hasHelp = true
 	return p
 }
 
