@@ -73,18 +73,22 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, true, false, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, 1.0)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 
-	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, true, false, 0.35).
-		WithContent(listView)
+	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 0.35).
+		WithContent(listView).
+		WithBorder()
 	rootPanel.Append(leftPanel)
-	rightPanel := panels.NewPanel(3, panels.LayoutDirectionNone, true, false, 0.65).WithContent(right)
+
+	rightPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 0.65).
+		WithContent(right).
+		WithBorder()
 	rootPanel.Append(rightPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("there's been an error: %v", err)
 		os.Exit(1)
 	}
 }

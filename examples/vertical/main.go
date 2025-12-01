@@ -8,10 +8,6 @@ import (
 	"github.com/rwirdemann/panels"
 )
 
-type item struct {
-	title, desc string
-}
-
 type model struct {
 	width  int
 	height int
@@ -50,18 +46,22 @@ func bottom(m tea.Model, panelID int, w, h int) string {
 }
 
 func main() {
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, true, false, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, 1.0)
 	m := model{panel: rootPanel}
 
-	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, true, false, 0.50).WithContent(top)
+	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 0.50).
+		WithContent(top).
+		WithBorder()
 	rootPanel.Append(topPanel)
 
-	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, true, false, 0.50).WithContent(bottom)
+	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 0.50).
+		WithContent(bottom).
+		WithBorder()
 	rootPanel.Append(bottomPanel)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
+		fmt.Printf("there's been an error: %v", err)
 		os.Exit(1)
 	}
 }
