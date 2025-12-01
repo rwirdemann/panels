@@ -76,7 +76,8 @@ func main() {
 	rootPanel := panels.NewPanel(panels.LayoutDirectionHorizontal, true, false, 1.0)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 
-	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35).WithContent(listView)
+	leftPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.35).
+		WithContent(listView)
 	rootPanel.Append(leftPanel)
 	rightPanel := panels.NewPanel(panels.LayoutDirectionNone, true, false, 0.65).WithContent(right)
 	rootPanel.Append(rightPanel)
