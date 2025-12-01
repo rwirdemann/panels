@@ -50,7 +50,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 ### The View Method
 
-Forward the method call to your root panel passing the model together with its width and height.
+Forward Bubble Tea's `View` call to your root panel's `View` method passing the model together with its width and height.
 
 ```go
 func (m model) View() string {
@@ -60,7 +60,7 @@ func (m model) View() string {
 
 ### The main function
 
-Create your model by assigning a root. Every panel the is added to this root panel will be layouted according the root panels base layout and the ratio of the nested panel. 
+Create your model by assigning a root panel that consumes the full size of your main window (ratio = 1.0). Every panel that is added to your root panel will be layouted according the root panels base layout and the ratio of the nested panel. 
 
 ```go
 func main() {
@@ -95,4 +95,4 @@ func top(m tea.Model, panelID int, w, h int) string {
 }
 ```
 
-You can either add specific render functions to each panel using `WithContent` our stick to a generic function used by all panels. You can use the provided paneID to determine wich panel needs to be rendered.
+You can either add specific render functions to each panel using `WithContent` or stick to a generic function used by all panels. You can use the provided paneID to determine wich panel needs to be rendered.
