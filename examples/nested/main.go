@@ -19,6 +19,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	m.panel.Update(msg)
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -47,6 +48,7 @@ func main() {
 	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 50).
 		WithContent(renderPanel).
 		WithBorder()
+	leftPanel.Focus()
 	rootPanel.Append(leftPanel)
 
 	rightPanel := panels.NewPanel(3, panels.LayoutDirectionVertical, 50)

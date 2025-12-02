@@ -38,6 +38,7 @@ type Panel struct {
 	layoutDirection LayoutDirection
 	weight          int
 	hasHelp         bool
+	hasFocus        bool
 	renderContent   func(m tea.Model, panelID int, w, h int) string
 }
 
@@ -60,8 +61,46 @@ func (p *Panel) WithHelp() *Panel {
 	return p
 }
 
+func (p *Panel) Focus() {
+	p.hasFocus = true
+}
+
+func (p *Panel) Blur() {
+	p.hasFocus = false
+}
+
 func (p *Panel) Append(panel *Panel) {
 	p.children = append(p.children, panel)
+}
+
+func (p *Panel) Update(msg tea.Msg) (*Panel, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "tab":
+			if len(p.children) > 0 {
+				if len(p.children[0].children) == 0 {
+					for i, c := range p.children {
+						if c.hasFocus {
+							c.Blur()
+							if i < len(p.children)-1 {
+								p.children[i+1].Focus()
+							} else {
+								p.children[0].Focus()
+							}
+							return p, nil
+						}
+					}
+				}
+				if len(p.children[0].children) > 0 {
+					for _, c := range p.children {
+						return c.Update(msg)
+					}
+				}
+			}
+		}
+	}
+	return p, nil
 }
 
 func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
