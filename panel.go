@@ -49,7 +49,23 @@ func (p *Panel) Append(panel *Panel) {
 	p.children = append(p.children, panel)
 }
 
-func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
+func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
+	// ignore first view call when windows size is still 0
+	if parentWidth == 0 && parentHeight == 0 {
+		return ""
+	}
+
+	// Set panel dimensions from parent if not already set by parent panel
+	if p.width == 0 || p.height == 0 {
+		if p.hasBorder {
+			p.width = parentWidth - 2
+			p.height = parentHeight - 2
+		} else {
+			p.width = parentWidth
+			p.height = parentHeight
+		}
+	}
+
 	if len(p.children) > 0 {
 
 		if p.layoutDirection == LayoutDirectionHorizontal {
@@ -59,9 +75,9 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 			}
 
 			if totalWeight > 0 {
-				remainder := parentWith
+				remainder := parentWidth
 				for i, child := range p.children {
-					childWidth := (parentWith * child.weight) / totalWeight
+					childWidth := (parentWidth * child.weight) / totalWeight
 					if child.hasBorder {
 						p.children[i].width = childWidth - 2
 						p.children[i].height = parentHeight - 2
@@ -96,10 +112,10 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 					height := (parentHeight * c.weight) / totalWeight
 					remainder -= height
 					if c.hasBorder {
-						p.children[i].width = parentWith - 2
+						p.children[i].width = parentWidth - 2
 						p.children[i].height = height - 2
 					} else {
-						p.children[i].width = parentWith
+						p.children[i].width = parentWidth
 						p.children[i].height = height
 					}
 				}
