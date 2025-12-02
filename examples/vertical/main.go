@@ -46,15 +46,15 @@ func bottom(m tea.Model, panelID int, w, h int) string {
 }
 
 func main() {
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, 100)
 	m := model{panel: rootPanel}
 
-	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 0.50).
+	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 50).
 		WithContent(top).
 		WithBorder()
 	rootPanel.Append(topPanel)
 
-	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 0.50).
+	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 50).
 		WithContent(bottom).
 		WithBorder()
 	rootPanel.Append(bottomPanel)

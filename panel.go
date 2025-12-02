@@ -21,13 +21,13 @@ type Panel struct {
 	hasBorder       bool
 	children        []*Panel
 	layoutDirection LayoutDirection
-	ratio           float32
+	weight          int
 	hasHelp         bool
 	renderContent   func(m tea.Model, panelID int, w, h int) string
 }
 
-func NewPanel(id int, layout LayoutDirection, ratio float32) *Panel {
-	return &Panel{ID: id, layoutDirection: layout, ratio: ratio}
+func NewPanel(id int, layout LayoutDirection, weight int) *Panel {
+	return &Panel{ID: id, layoutDirection: layout, weight: weight}
 }
 
 func (p *Panel) WithContent(f func(m tea.Model, panelID int, w, h int) string) *Panel {
@@ -53,21 +53,30 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 	if len(p.children) > 0 {
 
 		if p.layoutDirection == LayoutDirectionHorizontal {
-			totalUsed := 0
-			for i, child := range p.children {
-				childWidth := int(float32(parentWith) * child.ratio)
-				if child.hasBorder {
-					p.children[i].width = childWidth - 2
-					p.children[i].height = parentHeight - 2
-				} else {
-					p.children[i].width = childWidth
-					p.children[i].height = parentHeight
+			totalWeight := 0
+			for _, child := range p.children {
+				totalWeight += child.weight
+			}
+
+			if totalWeight > 0 {
+				remainder := parentWith
+				for i, child := range p.children {
+					childWidth := (parentWith * child.weight) / totalWeight
+					if child.hasBorder {
+						p.children[i].width = childWidth - 2
+						p.children[i].height = parentHeight - 2
+					} else {
+						p.children[i].width = childWidth
+						p.children[i].height = parentHeight
+					}
+					remainder -= childWidth
 				}
-				totalUsed += childWidth
+				// Distribute remainder
+				for i := 0; i < remainder; i++ {
+					p.children[i%len(p.children)].width++
+				}
 			}
-			if totalUsed < parentWith && len(p.children) > 0 {
-				p.children[len(p.children)-1].width += parentWith - totalUsed
-			}
+
 			var children []string
 			for _, c := range p.children {
 				children = append(children, c.View(m, c.width, c.height))
@@ -76,21 +85,29 @@ func (p *Panel) View(m tea.Model, parentWith, parentHeight int) string {
 		}
 
 		if p.layoutDirection == LayoutDirectionVertical {
-			totalUsed := 0
-			for i, c := range p.children {
-				height := int(float32(parentHeight) * c.ratio)
-				totalUsed += height
-				if c.hasBorder {
-					p.children[i].width = parentWith - 2
-					p.children[i].height = height - 2
-				} else {
-					p.children[i].width = parentWith
-					p.children[i].height = height
-				}
+			totalWeight := 0
+			for _, child := range p.children {
+				totalWeight += child.weight
 			}
 
-			if totalUsed < parentHeight && len(p.children) > 0 {
-				p.children[len(p.children)-1].height += parentHeight - totalUsed
+			if totalWeight > 0 {
+				remainder := parentHeight
+				for i, c := range p.children {
+					height := (parentHeight * c.weight) / totalWeight
+					remainder -= height
+					if c.hasBorder {
+						p.children[i].width = parentWith - 2
+						p.children[i].height = height - 2
+					} else {
+						p.children[i].width = parentWith
+						p.children[i].height = height
+					}
+				}
+
+				// Distribute remainder
+				for i := 0; i < remainder; i++ {
+					p.children[i%len(p.children)].height++
+				}
 			}
 
 			var children []string

@@ -73,15 +73,15 @@ func main() {
 		item{title: "Bitter melon", desc: "It cools you down"},
 	}
 
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, 1.0)
+	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, 100)
 	m := model{panel: rootPanel, list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 
-	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 0.35).
+	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 35).
 		WithContent(listView).
 		WithBorder()
 	rootPanel.Append(leftPanel)
 
-	rightPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 0.65).
+	rightPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 65).
 		WithContent(right).
 		WithBorder()
 	rootPanel.Append(rightPanel)
