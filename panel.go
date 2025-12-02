@@ -3,6 +3,7 @@ package panels
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
 )
 
 type LayoutDirection int
@@ -12,6 +13,20 @@ const (
 	LayoutDirectionHorizontal LayoutDirection = 1
 	LayoutDirectionVertical   LayoutDirection = 2
 )
+
+var PanelBorderColorFocus lipgloss.Color
+var PanelBorderColor lipgloss.Color
+
+func init() {
+	isDark := termenv.HasDarkBackground()
+	if isDark {
+		PanelBorderColorFocus = "12"
+		PanelBorderColor = "255"
+	} else {
+		PanelBorderColorFocus = "12"
+		PanelBorderColor = "0"
+	}
+}
 
 type Panel struct {
 	ID              int
@@ -137,6 +152,9 @@ func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
 	style := lipgloss.NewStyle().Height(p.height).Width(p.width)
 	if p.hasBorder {
 		style = style.Border(lipgloss.RoundedBorder())
+	}
+	if p.hasFocus {
+		style = style.BorderForeground(PanelBorderColorFocus)
 	}
 	content := ""
 	if p.renderContent != nil {

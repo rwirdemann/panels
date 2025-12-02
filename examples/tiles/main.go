@@ -39,14 +39,24 @@ func (m model) View() string {
 }
 
 func render(m tea.Model, panelID int, w, h int) string {
-	return fmt.Sprintf("Tile %d", panelID)
+	return "Press 'v' for vertical split"
 }
 
 func main() {
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, 100).
-		WithBorder().
-		WithContent(render)
+	rootPanel := panels.NewPanel(10, panels.LayoutDirectionVertical, 100)
 	m := model{panel: rootPanel}
+
+	row1 := panels.NewPanel(20, panels.LayoutDirectionHorizontal, 50)
+	rootPanel.Append(row1)
+	for i := 21; i < 25; i++ {
+		row1.Append(panels.NewPanel(i, panels.LayoutDirectionHorizontal, 25).WithBorder())
+	}
+
+	row2 := panels.NewPanel(30, panels.LayoutDirectionHorizontal, 50)
+	rootPanel.Append(row2)
+	for i := 31; i < 35; i++ {
+		row2.Append(panels.NewPanel(i, panels.LayoutDirectionHorizontal, 25).WithBorder())
+	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
