@@ -36,18 +36,23 @@ type Panel struct {
 	hasBorder       bool
 	children        []*Panel
 	layoutDirection LayoutDirection
-	weight          int
+	ratio           int
 	hasHelp         bool
 	hasFocus        bool
 	renderContent   func(m tea.Model, panelID int, w, h int) string
 }
 
-func NewPanel(id int, layout LayoutDirection, weight int) *Panel {
-	return &Panel{ID: id, layoutDirection: layout, weight: weight}
+func NewPanel(id int, ratio int) *Panel {
+	return &Panel{ID: id, layoutDirection: LayoutDirectionNone, ratio: ratio}
 }
 
 func (p *Panel) WithContent(f func(m tea.Model, panelID int, w, h int) string) *Panel {
 	p.renderContent = f
+	return p
+}
+
+func (p *Panel) WithLayout(layout LayoutDirection) *Panel {
+	p.layoutDirection = layout
 	return p
 }
 
@@ -125,13 +130,13 @@ func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
 		if p.layoutDirection == LayoutDirectionHorizontal {
 			totalWeight := 0
 			for _, child := range p.children {
-				totalWeight += child.weight
+				totalWeight += child.ratio
 			}
 
 			if totalWeight > 0 {
 				remainder := parentWidth
 				for i, child := range p.children {
-					childWidth := (parentWidth * child.weight) / totalWeight
+					childWidth := (parentWidth * child.ratio) / totalWeight
 					if child.hasBorder {
 						p.children[i].width = childWidth - 2
 						p.children[i].height = parentHeight - 2
@@ -157,13 +162,13 @@ func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
 		if p.layoutDirection == LayoutDirectionVertical {
 			totalWeight := 0
 			for _, child := range p.children {
-				totalWeight += child.weight
+				totalWeight += child.ratio
 			}
 
 			if totalWeight > 0 {
 				remainder := parentHeight
 				for i, c := range p.children {
-					height := (parentHeight * c.weight) / totalWeight
+					height := (parentHeight * c.ratio) / totalWeight
 					remainder -= height
 					if c.hasBorder {
 						p.children[i].width = parentWidth - 2

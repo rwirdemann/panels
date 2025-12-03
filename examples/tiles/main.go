@@ -50,26 +50,22 @@ func (m model) View() string {
 	return m.root.View(m, m.width, m.height)
 }
 
-func render(m tea.Model, panelID int, w, h int) string {
-	return "Press 'v' for vertical split"
-}
-
 func main() {
-	rootPanel := panels.NewPanel(10, panels.LayoutDirectionVertical, 100)
+	rootPanel := panels.NewPanel(10, 100).WithLayout(panels.LayoutDirectionVertical)
 	m := model{root: rootPanel, panels: make(map[int]*panels.Panel)}
 
-	row1 := panels.NewPanel(20, panels.LayoutDirectionHorizontal, 50)
+	row1 := panels.NewPanel(20, 50).WithLayout(panels.LayoutDirectionHorizontal)
 	rootPanel.Append(row1)
 	for i := range 4 {
-		p := panels.NewPanel(i, panels.LayoutDirectionHorizontal, 25).WithBorder()
+		p := panels.NewPanel(i, 25).WithBorder()
 		row1.Append(p)
 		m.panels[i] = p
 	}
 
-	row2 := panels.NewPanel(30, panels.LayoutDirectionHorizontal, 50)
+	row2 := panels.NewPanel(30, 50).WithLayout(panels.LayoutDirectionHorizontal)
 	rootPanel.Append(row2)
 	for i := 4; i < 8; i++ {
-		p := panels.NewPanel(i, panels.LayoutDirectionHorizontal, 25).WithBorder()
+		p := panels.NewPanel(i, 25).WithBorder()
 		row2.Append(p)
 		m.panels[i] = p
 	}

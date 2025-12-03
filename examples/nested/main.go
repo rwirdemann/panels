@@ -43,31 +43,31 @@ func renderPanel(m tea.Model, panelID int, w, h int) string {
 }
 
 func main() {
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionHorizontal, 100)
+	rootPanel := panels.NewPanel(1, 100).WithLayout(panels.LayoutDirectionHorizontal)
 	m := model{panel: rootPanel}
-	leftPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 50).
+	leftPanel := panels.NewPanel(2, 50).
 		WithContent(renderPanel).
 		WithBorder()
 	leftPanel.Focus()
 	rootPanel.Append(leftPanel)
 
-	rightPanel := panels.NewPanel(3, panels.LayoutDirectionVertical, 50)
+	rightPanel := panels.NewPanel(3, 50).WithLayout(panels.LayoutDirectionVertical)
 	rootPanel.Append(rightPanel)
 
-	topPanel := panels.NewPanel(4, panels.LayoutDirectionNone, 50).
+	topPanel := panels.NewPanel(4, 50).
 		WithContent(renderPanel).
 		WithBorder()
 
 	rightPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel(5, panels.LayoutDirectionHorizontal, 50)
+	bottomPanel := panels.NewPanel(5, 50).WithLayout(panels.LayoutDirectionHorizontal)
 	rightPanel.Append(bottomPanel)
 
-	leftBottomPanel := panels.NewPanel(6, panels.LayoutDirectionNone, 50).
+	leftBottomPanel := panels.NewPanel(6, 50).
 		WithContent(renderPanel).
 		WithBorder()
 	bottomPanel.Append(leftBottomPanel)
 
-	rightBottomPanel := panels.NewPanel(7, panels.LayoutDirectionNone, 50).
+	rightBottomPanel := panels.NewPanel(7, 50).
 		WithContent(renderPanel).
 		WithBorder()
 	rightBottomPanel.Title = "bottom right"
