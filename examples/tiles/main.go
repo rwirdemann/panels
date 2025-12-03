@@ -51,21 +51,21 @@ func (m model) View() string {
 }
 
 func main() {
-	rootPanel := panels.NewPanel(10, 100).WithLayout(panels.LayoutDirectionVertical)
+	rootPanel := panels.NewPanel().WithId(10).WithRatio(100).WithLayout(panels.LayoutDirectionVertical)
 	m := model{root: rootPanel, panels: make(map[int]*panels.Panel)}
 
-	row1 := panels.NewPanel(20, 50).WithLayout(panels.LayoutDirectionHorizontal)
+	row1 := panels.NewPanel().WithId(20).WithRatio(50).WithLayout(panels.LayoutDirectionHorizontal)
 	rootPanel.Append(row1)
 	for i := range 4 {
-		p := panels.NewPanel(i, 25).WithBorder()
+		p := panels.NewPanel().WithId(i).WithRatio(25).WithBorder()
 		row1.Append(p)
 		m.panels[i] = p
 	}
 
-	row2 := panels.NewPanel(30, 50).WithLayout(panels.LayoutDirectionHorizontal)
+	row2 := panels.NewPanel().WithId(30).WithRatio(50).WithLayout(panels.LayoutDirectionHorizontal)
 	rootPanel.Append(row2)
 	for i := 4; i < 8; i++ {
-		p := panels.NewPanel(i, 25).WithBorder()
+		p := panels.NewPanel().WithId(i).WithRatio(25).WithBorder()
 		row2.Append(p)
 		m.panels[i] = p
 	}

@@ -40,11 +40,25 @@ type Panel struct {
 	hasHelp         bool
 	hasFocus        bool
 	renderContent   func(m tea.Model, panelID int, w, h int) string
-	parent          *Panel
 }
 
-func NewPanel(id int, ratio int) *Panel {
-	return &Panel{ID: id, layoutDirection: LayoutDirectionNone, ratio: ratio}
+func NewPanel() *Panel {
+	return &Panel{layoutDirection: LayoutDirectionNone}
+}
+
+func (p *Panel) WithId(id int) *Panel {
+	p.ID = id
+	return p
+}
+
+func (p *Panel) WithRatio(ratio int) *Panel {
+	p.ratio = ratio
+	return p
+}
+
+func (p *Panel) WithTitle(title string) *Panel {
+	p.Title = title
+	return p
 }
 
 func (p *Panel) WithContent(f func(m tea.Model, panelID int, w, h int) string) *Panel {
@@ -77,7 +91,6 @@ func (p *Panel) Blur() {
 
 func (p *Panel) Append(panel *Panel) {
 	p.children = append(p.children, panel)
-	panel.parent = p
 }
 
 func (p *Panel) Update(msg tea.Msg) (*Panel, tea.Cmd) {
