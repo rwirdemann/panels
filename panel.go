@@ -40,6 +40,7 @@ type Panel struct {
 	hasHelp         bool
 	hasFocus        bool
 	renderContent   func(m tea.Model, panelID int, w, h int) string
+	parent          *Panel
 }
 
 func NewPanel(id int, ratio int) *Panel {
@@ -76,6 +77,7 @@ func (p *Panel) Blur() {
 
 func (p *Panel) Append(panel *Panel) {
 	p.children = append(p.children, panel)
+	panel.parent = p
 }
 
 func (p *Panel) Update(msg tea.Msg) (*Panel, tea.Cmd) {
@@ -83,29 +85,90 @@ func (p *Panel) Update(msg tea.Msg) (*Panel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "tab":
-			if len(p.children) > 0 {
-				if len(p.children[0].children) == 0 {
-					for i, c := range p.children {
-						if c.hasFocus {
-							c.Blur()
-							if i < len(p.children)-1 {
-								p.children[i+1].Focus()
-							} else {
-								p.children[0].Focus()
-							}
-							return p, nil
-						}
-					}
+			// Find the currently focused panel
+			var currentFocused *Panel
+			p.walk(func(panel *Panel) bool {
+				if panel.hasFocus {
+					currentFocused = panel
+					return false // Stop traversal
 				}
-				if len(p.children[0].children) > 0 {
-					for _, c := range p.children {
-						return c.Update(msg)
-					}
+				return true
+			})
+
+			if currentFocused != nil {
+				currentFocused.Blur()
+			}
+
+			// Find the next panel to focus
+			nextFocus := p.findNextFocusablePanel(currentFocused)
+
+			if nextFocus != nil {
+				nextFocus.Focus()
+			} else if currentFocused == nil {
+				// If no panel was focused initially, focus the first one
+				p.walk(func(panel *Panel) bool {
+					nextFocus = panel
+					return false
+				})
+				if nextFocus != nil {
+					nextFocus.Focus()
 				}
+			}
+			return p, nil
+		}
+	}
+
+	return p, nil
+}
+
+// findNextFocusablePanel determines the next panel to focus based on the
+// current one. It implements a depth-first traversal logic and only considers
+// leaf panels (panels without children) as focusable.
+func (p *Panel) findNextFocusablePanel(currentFocused *Panel) *Panel {
+	var focusablePanels []*Panel
+	p.walk(func(panel *Panel) bool {
+		if len(panel.children) == 0 {
+			focusablePanels = append(focusablePanels, panel)
+		}
+		return true
+	})
+
+	if len(focusablePanels) == 0 {
+		return nil
+	}
+
+	if currentFocused == nil {
+		return focusablePanels[0]
+	}
+
+	for i, panel := range focusablePanels {
+		if panel == currentFocused {
+			if i < len(focusablePanels)-1 {
+				return focusablePanels[i+1] // Return the next leaf panel
+			} else {
+				return focusablePanels[0] // Wrap around to the first leaf panel
 			}
 		}
 	}
-	return p, nil
+
+	// If the currently focused panel is not in the list of focusable panels
+	// (e.g., it's a container that somehow got focus), return the first
+	// focusable panel.
+	return focusablePanels[0]
+}
+
+// walk performs a depth-first traversal of the panel tree, calling the visitor
+// function for each panel. If the visitor returns false, the traversal stops.
+func (p *Panel) walk(visitor func(*Panel) bool) bool {
+	if !visitor(p) {
+		return false
+	}
+	for _, child := range p.children {
+		if !child.walk(visitor) {
+			return false
+		}
+	}
+	return true
 }
 
 func (p *Panel) View(m tea.Model, parentWidth, parentHeight int) string {
