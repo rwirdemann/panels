@@ -43,7 +43,7 @@ func renderPanel(m tea.Model, panelID int, w, h int) string {
 }
 
 func main() {
-	rootPanel := panels.NewPanel().WithId(1).WithRatio(100).WithLayout(panels.LayoutDirectionHorizontal)
+	rootPanel := panels.NewPanel().WithRatio(100).WithLayout(panels.LayoutDirectionHorizontal)
 	m := model{panel: rootPanel}
 	leftPanel := panels.NewPanel().WithId(2).WithRatio(50).
 		WithContent(renderPanel).
@@ -51,7 +51,7 @@ func main() {
 	leftPanel.Focus()
 	rootPanel.Append(leftPanel)
 
-	rightPanel := panels.NewPanel().WithId(3).WithRatio(50).WithLayout(panels.LayoutDirectionVertical)
+	rightPanel := panels.NewPanel().WithRatio(50).WithLayout(panels.LayoutDirectionVertical)
 	rootPanel.Append(rightPanel)
 
 	topPanel := panels.NewPanel().WithId(4).WithRatio(50).
@@ -59,7 +59,7 @@ func main() {
 		WithBorder()
 
 	rightPanel.Append(topPanel)
-	bottomPanel := panels.NewPanel().WithId(5).WithRatio(50).WithLayout(panels.LayoutDirectionHorizontal)
+	bottomPanel := panels.NewPanel().WithRatio(50).WithLayout(panels.LayoutDirectionHorizontal)
 	rightPanel.Append(bottomPanel)
 
 	leftBottomPanel := panels.NewPanel().WithId(6).WithRatio(50).

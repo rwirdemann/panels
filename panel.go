@@ -108,24 +108,16 @@ func (p *Panel) Update(msg tea.Msg) (*Panel, tea.Cmd) {
 				return true
 			})
 
-			if currentFocused != nil {
-				currentFocused.Blur()
+			if currentFocused == nil {
+				return p, nil
 			}
+
+			currentFocused.Blur()
 
 			// Find the next panel to focus
 			nextFocus := p.findNextFocusablePanel(currentFocused)
-
 			if nextFocus != nil {
 				nextFocus.Focus()
-			} else if currentFocused == nil {
-				// If no panel was focused initially, focus the first one
-				p.walk(func(panel *Panel) bool {
-					nextFocus = panel
-					return false
-				})
-				if nextFocus != nil {
-					nextFocus.Focus()
-				}
 			}
 			return p, nil
 		}
