@@ -64,15 +64,19 @@ Create your model by assigning a root panel that consumes the full size of your 
 
 ```go
 func main() {
-	rootPanel := panels.NewPanel(1, panels.LayoutDirectionVertical, 1.0)
+	rootPanel := panels.NewPanel().WithId(1).
+		WithRatio(100).
+		WithLayout(panels.LayoutDirectionVertical)
 	m := model{panel: rootPanel}
 
-	topPanel := panels.NewPanel(2, panels.LayoutDirectionNone, 0.50).
+	topPanel := panels.NewPanel().WithId(2).
+		WithRatio(50).
 		WithContent(top).
 		WithBorder()
 	rootPanel.Append(topPanel)
 
-	bottomPanel := panels.NewPanel(3, panels.LayoutDirectionNone, 0.50).
+	bottomPanel := panels.NewPanel().WithId(3).
+		WithRatio(50).
 		WithContent(bottom).
 		WithBorder()
 	rootPanel.Append(bottomPanel)
